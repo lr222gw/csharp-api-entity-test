@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using workshop.wwwapi.Models;
 using workshop.wwwapi.Repository;
 
 namespace workshop.wwwapi.Endpoints
@@ -6,7 +7,7 @@ namespace workshop.wwwapi.Endpoints
     public static class SurgeryEndpoint
     {
         //TODO:  add additional endpoints in here according to the requirements in the README.md 
-        public static void ConfigurePatientEndpoint(this WebApplication app)
+        public static void ConfigureSurgeryEndpoint(this WebApplication app)
         {
             var surgeryGroup = app.MapGroup("surgery");
 
@@ -15,17 +16,17 @@ namespace workshop.wwwapi.Endpoints
             surgeryGroup.MapGet("/appointmentsbydoctor/{id}", GetAppointmentsByDoctor);
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public static async Task<IResult> GetPatients(IRepository repository)
+        public static async Task<IResult> GetPatients(IRepository<Patient> repository)
         { 
-            return TypedResults.Ok(await repository.GetPatients());
+            return TypedResults.Ok(await repository.GetEntries());
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public static async Task<IResult> GetDoctors(IRepository repository)
+        public static async Task<IResult> GetDoctors(IRepository<Doctor> repository)
         {
-            return TypedResults.Ok(await repository.GetPatients());
+            return TypedResults.Ok(await repository.GetEntries());
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public static async Task<IResult> GetAppointmentsByDoctor(IRepository repository, int id)
+        public static async Task<IResult> GetAppointmentsByDoctor(IRepository<Doctor> repository, int id)
         {
             return TypedResults.Ok(await repository.GetAppointmentsByDoctor(id));
         }
