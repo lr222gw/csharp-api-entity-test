@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
+using workshop.wwwapi.Models.Attributes;
 using workshop.wwwapi.Models.Interface;
 
 namespace workshop.wwwapi.Models
 {
     //TODO: decorate class/columns accordingly    
     [Table("patients")]
-    public class Patient : ISeedable
+    public class Patient : ISeedable, ICustomModel
     {
         [Key]
         public int Id { get; set; }

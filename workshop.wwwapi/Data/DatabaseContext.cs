@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Globalization;
 using workshop.wwwapi.Models;
 
 namespace workshop.wwwapi.Data
@@ -21,12 +22,14 @@ namespace workshop.wwwapi.Data
                 HasKey(p => new { p.PatientId, p.DoctorId });
 
             modelBuilder.Entity<Appointment>(). // Entity is Appointment
-                HasOne<Doctor>().               // Each Entry has exactly One Doctor
+                //HasOne<Doctor>().             // Note: if no navigation properties are used: Define relation type with generic
+                HasOne(p => p.Doctor).          // Each Entry has exactly One Doctor
                 WithMany(p => p.Appointments).  // where the Doctor has a list of Appointments
                 HasForeignKey(p => p.DoctorId); // Each of the Doctors Appointments stores a foreign key that references the Doctor
 
+            
             modelBuilder.Entity<Appointment>().
-                HasOne<Patient>().
+                HasOne(p => p.Patient).
                 WithMany(pa => pa.Appointments).
                 HasForeignKey(ap => ap.PatientId);
 
@@ -40,6 +43,7 @@ namespace workshop.wwwapi.Data
 
             modelBuilder.Entity<Appointment>().
                 HasData(seeder.Appointments);
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

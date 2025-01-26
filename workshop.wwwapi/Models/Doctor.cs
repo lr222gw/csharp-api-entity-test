@@ -6,7 +6,7 @@ namespace workshop.wwwapi.Models
 {
     //TODO: decorate class/columns accordingly    
     [Table("doctors")]
-    public class Doctor : ISeedable
+    public class Doctor : ISeedable, ICustomModel
     {
         [Key]
         public int Id { get; set; }

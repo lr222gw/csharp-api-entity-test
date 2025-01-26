@@ -28,10 +28,10 @@
 - [ ]  Implement API for Appointments; 
   - [X]  get all appointments 
   - [X]  get appointment by id 
-  - [ ]  get appointments by doctor id
-  - [ ]  get appointments by patient id 
-  - [ ]  create new appointment; 
-  - [ ]  make sure to use DTOs as required for returning the results 
+  - [X]  get appointments by doctor id
+  - [X]  get appointments by patient id 
+  - [X]  create new appointment;
+  - [X]  make sure to use DTOs as required for returning the results 
 - [ ]  Update all dtos (to include the relevant loaded fields via the relations) for : 
   - [ ]  patient 
     - [ ] a patient should include its appointments and each appointment include the doctor's name / id

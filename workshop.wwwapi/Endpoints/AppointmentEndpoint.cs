@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using workshop.wwwapi.Models;
 using workshop.wwwapi.Repository;
 
@@ -13,29 +14,53 @@ namespace workshop.wwwapi.Endpoints
             var appointments = app.MapGroup("/appointments");
             appointments.MapGet("/", GetAppointments);
             appointments.MapPost("/", CreateAppointment);
-            //appointments.MapGet("/{doctor_id}/{patient_id}", GetAppointment);
-            appointments.MapGet("/appointment", GetAppointment);
-        }
-
-
+        }        
+        
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetAppointment(HttpContext context, IRepository<Appointment> repo, int patient_id, int doctor_id)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        private static async Task<IResult> GetAppointments(
+            HttpContext context, 
+            IRepository<Appointment> repo, 
+            IRepository<Doctor> d_repo, 
+            IRepository<Patient> p_repo, 
+            int? patient_id, 
+            int? doctor_id
+            )
         {
-            //var a = await repo.GetEntry(new { patient_id, doctor_id });
-            var a = await repo.GetEntry(patient_id, doctor_id );
+            if (patient_id == null && doctor_id == null)      return await _GetAppointments(context, repo);
+            else if (patient_id != null && doctor_id == null) return await _GetPatientAppontments(context, p_repo, patient_id.Value);
+            else if (patient_id == null && doctor_id != null) return await _GetDoctorAppontments(context, d_repo, doctor_id.Value);
+            else 
+                return await _GetAppointment(context, repo, patient_id.Value, doctor_id.Value);
+        }
+        private static async Task<IResult> _GetAppointment(HttpContext context, IRepository<Appointment> repo, int patient_id, int doctor_id)
+        {
+            var a = await repo.GetEntry(x =>  x.Include(x => x.PatientId == patient_id && x.DoctorId == doctor_id) );
             if (a == null) return TypedResults.NotFound($"Appointment with id[{patient_id}] was not found");
             return TypedResults.Ok(new DTO.Response.Appointment.Get(a));
         }
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetAppointments(HttpContext context, IRepository<Appointment> repo)
+        private static async Task<IResult> _GetAppointments(HttpContext context, IRepository<Appointment> repo)
         {
-            var a = await repo.GetEntries();
-            if (a.Count() == 0) return TypedResults.NotFound($"No appointments was not found");
+            var a = await repo.GetEntries(p => p.Include(x => x.Patient), p => p.Include(x => x.Doctor));
+            if (a.Count() == 0) return TypedResults.NotFound($"No appointments was found");
             return TypedResults.Ok(a.Select(x => new DTO.Response.Appointment.Get(x)).ToList());
         }
+        private static async Task<IResult> _GetDoctorAppontments(HttpContext context, IRepository<Doctor> repo, int id)
+        {
+            var a = await repo.GetEntry(x => x.Include(x => x.Id == id), x  => x.Include(x => x.Appointments));
+            if (a == null) return TypedResults.NotFound($"Doctor with id[{id}] was not found");
+
+            return TypedResults.Ok(new DTO.Response.Appointment.GetDoctors(a));
+        }
+        private static async Task<IResult> _GetPatientAppontments(HttpContext context, IRepository<Patient> repo, int id)
+        {
+            var p = await repo.GetEntry(x => x.Include(x => x.Id == id), x => x.Include(x => x.Appointments));
+            if (p == null) return TypedResults.NotFound($"Patient with id[{id}] was not found");
+
+            return TypedResults.Ok(new DTO.Response.Appointment.GetPatients(p));
+        }
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> CreateAppointment(HttpContext context, IRepository<Appointment> repo, DTO.Request.Appointment.Create dto)

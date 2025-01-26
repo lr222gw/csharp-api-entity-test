@@ -36,16 +36,16 @@ namespace workshop.wwwapi.Data
         {
             new()
             {
-                "Mario",
-                "Eggman",
-                "Cortex",
-                "Bosconovitch",
-                "Faust",
-                "Chakwas",
-                "Nefarious",
-                "Birkin",
-                "Wily",
-                "Kaufmann",
+                "Dr.Mario",
+                "Dr.Eggman",
+                "Dr.Cortex",
+                "Dr.Bosconovitch",
+                "Dr.Faust",
+                "Dr.Chakwas",
+                "Dr.Nefarious",
+                "Dr.Birkin",
+                "Dr.Wily",
+                "Dr.Kaufmann",
             },
             new()
             {
@@ -88,12 +88,23 @@ namespace workshop.wwwapi.Data
 
             DateTime initialDate = DateTime.Parse(startDate).ToUniversalTime(); // must be universal time, or else migration error
 
+
             for (int i = 0; i < _doctors.Count(); i++)
             {
                 _appointments.Add(new Appointment()
                 {
-                    DoctorId  = _doctors[i % _doctors.Count()].Id,
+                    
+                    DoctorId = _doctors[i % _doctors.Count()].Id,
                     PatientId = _patients[i % _patients.Count()].Id,
+                    Booking = initialDate.AddDays((double)(i * inverval))
+                });
+            }
+            for (int i = 0; i < _doctors.Count(); i += 2)
+            {
+                _appointments.Add(new Appointment()
+                {
+                    DoctorId = _doctors[i % _doctors.Count()].Id,
+                    PatientId = _patients[(i + 1) % _patients.Count()].Id,
                     Booking = initialDate.AddDays((double)(i * inverval))
                 });
             }
