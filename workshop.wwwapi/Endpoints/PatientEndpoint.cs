@@ -61,7 +61,7 @@ namespace workshop.wwwapi.Endpoints
             if (p == null) return TypedResults.BadRequest($"Not a valid DTO");
             //return TypedResults.Ok(new DTO.Response.Patient.Get(p)); 
 
-            return TypedResults.Ok(DTO.Response.Patient.Get.DTO(repo,p.Id)); 
+            return TypedResults.Ok(await DTO.Response.Patient.Get.DTO(repo,p.Id)); 
             //return TypedResults.Ok(new DTO.Response.Patient.Get(p)); 
         }
     }

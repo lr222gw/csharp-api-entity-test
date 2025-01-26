@@ -22,12 +22,14 @@ namespace workshop.wwwapi.Endpoints
         private static async Task<IResult> GetDoctor(HttpContext context, IRepository<Doctor> repo, int id)
         {
             //var p = await repo.GetEntry(x => x.Id == id, x => (x.Include(x => x.Appointments)) );
-            var p = await repo.GetEntry(x => x.Include(x => x.Id == id), x => (x.Include(x => x.Appointments)) );
+            //var p = await repo.GetEntry(x => x.Include(x => x.Id == id), x => (x.Include(x => x.Appointments)) );
             //var p = await repo.GetEntry(x => x.Id == id, x => x.Appointments );
             //var p = await repo.GetEntries2(x => x.ThenInclude(a => a.Appointments).ThenInclude(x => x.Patient));
             //var p = await repo.GetEntries2(x => x.ThenInclude(a => a.Appointments).ThenInclude(x => x.Patient));
+            var p = await DTO.Response.Doctor.Get.DTO(repo, id);
             if (p == null) return TypedResults.NotFound($"Doctor with id[{id}] was not found");
-            return TypedResults.Ok(new DTO.Response.Doctor.Get(p)); //TODO: replace with DTO 
+            //return TypedResults.Ok(new DTO.Response.Doctor.Get(p)); //TODO: replace with DTO 
+            return TypedResults.Ok(p); //TODO: replace with DTO 
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -45,11 +47,14 @@ namespace workshop.wwwapi.Endpoints
             //var p = await repo.GetEntries3(d, y => y.Appointments);
             //var p = await repo.GetEntries3(y => y.Appointments);
             //var p = await repo.GetEntries3(y => y.Include(x => x.Appointments));
-            var p = await repo.GetEntries(y => y.Include(x => x.Appointments).ThenInclude(x => x.Patient));
+            //var p = await repo.GetEntries(y => y.Include(x => x.Appointments).ThenInclude(x => x.Patient));
+            //var p = await repo.GetEntries(y => y.Include(x => x.Appointments).ThenInclude(x => x.Patient));
             //////////////////////////////
+            var p = await DTO.Response.Doctor.Get.DTO(repo);
             
             if (p.Count() == 0) return TypedResults.NotFound($"No doctors was found");
-            return TypedResults.Ok(p.Select(x => new DTO.Response.Doctor.Get(x)).ToList());
+            return TypedResults.Ok(p);
+            //return TypedResults.Ok(p.Select(x => new DTO.Response.Doctor.Get(x)).ToList());
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -62,7 +67,8 @@ namespace workshop.wwwapi.Endpoints
 
             var p = await repo.CreateEntry(doctors);
             if (p == null) return TypedResults.BadRequest($"Not a valid DTO");
-            return TypedResults.Ok(new DTO.Response.Doctor.Get(p)); 
+            return TypedResults.Ok(await DTO.Response.Doctor.Get.DTO(repo,p.Id)); 
+            //return TypedResults.Ok(new DTO.Response.Doctor.Get(p)); 
         }
     }
 }

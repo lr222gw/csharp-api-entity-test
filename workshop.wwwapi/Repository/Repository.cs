@@ -103,7 +103,6 @@ namespace workshop.wwwapi.Repository
         }
         public async Task<T?> CreateEntry(T entry)
         {
-
             var a = await _table.AddAsync(entry);
             await _databaseContext.SaveChangesAsync();
             //return await _table.FindAsync;

@@ -15,7 +15,8 @@ namespace workshop.wwwapi.DTO.Response.Patient
         {
             this.Id = instance.Id;
             this.FullName = instance.FullName;
-            this.appointments = instance.Appointments.Select(x => new Appointment.Get(x)).ToList();
+            //this.appointments = instance.Appointments.Select(x => new Appointment.Get(x)).ToList();
+            this.appointments = ToDTOs<Models.Appointment, Appointment.Get>(instance.Appointments).ToList();
         }
 
         public int Id { get; set; }
@@ -45,9 +46,9 @@ namespace workshop.wwwapi.DTO.Response.Patient
             //        ThenInclude(x => x.Doctor);
         }
         //public override void def_id_Incl(ref Func<Models.Patient, bool> id_query, object id)
-        public override void def_id_Incl(ref Func<IQueryable<Models.Patient>, IQueryable<Models.Patient>> id_query, object id)
+        public override void def_id_Incl(ref Func<IQueryable<Models.Patient>, IQueryable<Models.Patient>> id_query, params object[] id)
         {
-            idLambda = x => x.Where(x => x.Id == (int)id);
+            idLambda = x => x.Where(x => x.Id == (int)id[0]);
             //idLambda = x => x.Id == (int)id;
         }
 

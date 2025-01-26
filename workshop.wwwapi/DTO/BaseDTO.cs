@@ -8,20 +8,20 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace workshop.wwwapi.DTO
 {
-    public abstract class BaseDTO<T, Y>
-        where T : BaseDTO<T, Y>, new()
-        where Y : class, ICustomModel
+    public abstract class BaseDTO<DTO_type, Model_type>
+        where DTO_type : BaseDTO<DTO_type, Model_type>, new()
+        where Model_type : class, ICustomModel
     {
         protected BaseDTO(){}
         //private IQueryable<Y> query;
-        public Func<IQueryable<Y>, IQueryable<Y>> queryLambda;
+        public Func<IQueryable<Model_type>, IQueryable<Model_type>> queryLambda;
         //public Func<Y, bool> idLambda;
-        public Func<IQueryable<Y>, IQueryable<Y>> idLambda;
+        public Func<IQueryable<Model_type>, IQueryable<Model_type>> idLambda;
 
         //protected Y instance;
-        public static async Task<List<T>>  DTO(IRepository<Y> repo)
+        public static async Task<List<DTO_type>>  DTO(IRepository<Model_type> repo)
         {
-            var a = new T();
+            var a = new DTO_type();
             //a.query = repo.Table.AsQueryable();
 
             //var instances = await DefineIncludes_multi(repo)
@@ -31,13 +31,14 @@ namespace workshop.wwwapi.DTO
             a.defIncl(ref a.queryLambda);
 
             var instances = await a.DefineIncludes_multi(repo);
-            var dtos = instances.Select(x => { var n = new T(); n.Instantiate(x); return n; }).ToList();
+            var dtos = instances.Select(x => { var n = new DTO_type(); n.Instantiate(x); return n; }).ToList();
 
             return dtos;
         }
-        public static async Task<T>  DTO(IRepository<Y> repo, object id)
+        //public static async Task<DTO_type>  DTO(IRepository<Model_type> repo, object id)
+        public static async Task<DTO_type>  DTO(IRepository<Model_type> repo, params object[] id)
         {
-            var a = new T();
+            var a = new DTO_type();
             //a.query = repo.Table.AsQueryable();
             //a.defIncl(ref a.query);
             a.defIncl(ref a.queryLambda);
@@ -46,6 +47,29 @@ namespace workshop.wwwapi.DTO
             var instance = await a.DefineIncludes_single(repo, id);
             a.Instantiate(instance);
             return a;
+        }
+
+        public static B ToDTO<A,B>(A input)
+            where B : BaseDTO<B, A>, new()
+            where A : class, ICustomModel
+        {
+            var b = new B();
+            b.Instantiate(input);
+            return b;
+        }
+        public static IEnumerable<B> ToDTOs<A,B>(IEnumerable<A> input)
+            where B : BaseDTO<B, A>, new()
+            where A : class, ICustomModel
+        {
+            List<B> dto_list = new();
+            foreach (var a in input)
+            {
+                var b = new B();
+                b.Instantiate(a);
+                dto_list.Add(b);
+            }
+            
+            return dto_list;
         }
 
         //private async Task init(IRepository<Y> repo, object? id = null)
@@ -58,7 +82,7 @@ namespace workshop.wwwapi.DTO
         //        var instances = await DefineIncludes_multi(repo);
 
         //        instances.Select(w => { w });
-                
+
         //    }
         //    else
         //    {
@@ -69,13 +93,13 @@ namespace workshop.wwwapi.DTO
         //}
 
         //private async Task<Y> DefineIncludes(IRepository<Y> repo, object id)
-        private async Task<Y> DefineIncludes_single(IRepository<Y> repo, object id)
+        private async Task<Model_type> DefineIncludes_single(IRepository<Model_type> repo, object id)
         {
 
             
             return await repo.GetEntry(  idLambda, [queryLambda]);
         }
-        private async Task<IEnumerable<Y>> DefineIncludes_multi(IRepository<Y> repo)
+        private async Task<IEnumerable<Model_type>> DefineIncludes_multi(IRepository<Model_type> repo)
         {
             return await repo.GetEntries([queryLambda]);
 
@@ -100,11 +124,11 @@ namespace workshop.wwwapi.DTO
 
         //}
         //public abstract void defIncl(ref IQueryable<Y> query);
-        public abstract void defIncl(ref Func<IQueryable<Y>, IQueryable<Y>> queryLambda);
+        public abstract void defIncl(ref Func<IQueryable<Model_type>, IQueryable<Model_type>> queryLambda);
         //public abstract void def_id_Incl(ref IQueryable<Y> id_query, object id);
         //public abstract void def_id_Incl(ref Func<Y, bool> id_query, object id);
-        public abstract void def_id_Incl(ref Func<IQueryable<Y>, IQueryable<Y>> id_query, object id);
-        public abstract void  Instantiate(Y instance);
+        public abstract void def_id_Incl(ref Func<IQueryable<Model_type>, IQueryable<Model_type>> id_query, params object[] id);
+        public abstract void  Instantiate(Model_type instance);
 
         
     }

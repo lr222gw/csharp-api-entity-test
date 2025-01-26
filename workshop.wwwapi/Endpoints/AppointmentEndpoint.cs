@@ -36,45 +36,64 @@ namespace workshop.wwwapi.Endpoints
         }
         private static async Task<IResult> _GetAppointment(HttpContext context, IRepository<Appointment> repo, int patient_id, int doctor_id)
         {
-            var a = await repo.GetEntry(x =>  x.Include(x => x.PatientId == patient_id && x.DoctorId == doctor_id) );
-            if (a == null) return TypedResults.NotFound($"Appointment with id[{patient_id}] was not found");
-            return TypedResults.Ok(new DTO.Response.Appointment.Get(a));
+            //var a = await repo.GetEntry(x =>  x.Include(x => x.PatientId == patient_id && x.DoctorId == doctor_id) );
+            try
+            {
+
+                var a = await DTO.Response.Appointment.Get.DTO(repo,  doctor_id, patient_id );
+                if (a == null) return TypedResults.NotFound($"Appointment with id[{doctor_id},{patient_id}] was not found");
+                //return TypedResults.Ok(new DTO.Response.Appointment.Get(a));
+                return TypedResults.Ok(a);
+            }
+            catch(Exception e )
+            {
+                return TypedResults.NotFound($"Appointment with id[{doctor_id},{patient_id}] was not found");
+            }
         }
         private static async Task<IResult> _GetAppointments(HttpContext context, IRepository<Appointment> repo)
         {
-            var a = await repo.GetEntries(p => p.Include(x => x.Patient), p => p.Include(x => x.Doctor));
+            //var a = await repo.GetEntries(p => p.Include(x => x.Patient), p => p.Include(x => x.Doctor));
+            var a = await DTO.Response.Appointment.Get.DTO(repo);
             if (a.Count() == 0) return TypedResults.NotFound($"No appointments was found");
-            return TypedResults.Ok(a.Select(x => new DTO.Response.Appointment.Get(x)).ToList());
+            //return TypedResults.Ok(a.Select(x => new DTO.Response.Appointment.Get(x)).ToList());
+            return TypedResults.Ok(a);
         }
         private static async Task<IResult> _GetDoctorAppontments(HttpContext context, IRepository<Doctor> repo, int id)
         {
-            var a = await repo.GetEntry(x => x.Include(x => x.Id == id), x  => x.Include(x => x.Appointments));
+            //var a = await repo.GetEntry(x => x.Include(x => x.Id == id), x  => x.Include(x => x.Appointments));
+            var a = await DTO.Response.Appointment.GetDoctors.DTO(repo, id);
             if (a == null) return TypedResults.NotFound($"Doctor with id[{id}] was not found");
 
-            return TypedResults.Ok(new DTO.Response.Appointment.GetDoctors(a));
+            return TypedResults.Ok(a);
+            //return TypedResults.Ok(new DTO.Response.Appointment.GetDoctors(a));
         }
         private static async Task<IResult> _GetPatientAppontments(HttpContext context, IRepository<Patient> repo, int id)
         {
-            var p = await repo.GetEntry(x => x.Include(x => x.Id == id), x => x.Include(x => x.Appointments));
+            //var p = await repo.GetEntry(x => x.Include(x => x.Id == id), x => x.Include(x => x.Appointments));
+            var p = await DTO.Response.Appointment.GetPatients.DTO(repo,id);
             if (p == null) return TypedResults.NotFound($"Patient with id[{id}] was not found");
 
-            return TypedResults.Ok(new DTO.Response.Appointment.GetPatients(p));
+            return TypedResults.Ok(p);
+            //return TypedResults.Ok(new DTO.Response.Appointment.GetPatients(p));
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> CreateAppointment(HttpContext context, IRepository<Appointment> repo, DTO.Request.Appointment.Create dto)
+        private static async Task<IResult> CreateAppointment(HttpContext context, IRepository<Appointment> repo,IRepository<Patient> p_repo, IRepository<Doctor> d_repo, DTO.Request.Appointment.Create dto)
         {
             Appointment appointments = new()
             {
                 Booking = dto.Booking,
                 DoctorId = dto.DoctorId,
-                PatientId = dto.PatientId
+                PatientId = dto.PatientId,
+                Doctor   = await d_repo.GetEntry(x => x.Where(x => x.Id == dto.DoctorId)),
+                Patient  = await p_repo.GetEntry(x => x.Where(x => x.Id == dto.PatientId))
             };
 
             var a = await repo.CreateEntry(appointments);
             if (a == null) return TypedResults.BadRequest($"Not a valid DTO");
-            return TypedResults.Ok(new DTO.Response.Appointment.Get(a)); 
+            return TypedResults.Ok(await DTO.Response.Appointment.Get.DTO(repo, appointments.DoctorId, appointments.PatientId)); 
+            //return TypedResults.Ok(new DTO.Response.Appointment.Get(a)); 
         }
     }
 }
