@@ -20,6 +20,12 @@ namespace workshop.wwwapi.Data
             //Appointment Key etc.. Add Here
             modelBuilder.Entity<Appointment>().
                 HasKey(p => new { p.PatientId, p.DoctorId });
+            
+            modelBuilder.Entity<Prescription>().
+                HasKey(p => new { p.Id });
+
+            modelBuilder.Entity <MedicinesInPrescription>().
+                HasKey(p => new { p.MedicineId, p.PrescriptionId});
 
             modelBuilder.Entity<Appointment>(). // Entity is Appointment
                 //HasOne<Doctor>().             // Note: if no navigation properties are used: Define relation type with generic
@@ -33,6 +39,36 @@ namespace workshop.wwwapi.Data
                 WithMany(pa => pa.Appointments).
                 HasForeignKey(ap => ap.PatientId);
 
+            modelBuilder.Entity<Prescription>().
+                HasOne(p => p.Patient).
+                WithMany(p => p.Prescriptions).
+                HasForeignKey(p => p.PatientId);
+            
+            modelBuilder.Entity<Prescription>().
+                HasOne(p => p.Doctor).
+                WithMany(p => p.Prescriptions).
+                HasForeignKey(p => p.DoctorId);
+
+            modelBuilder.Entity<Prescription>().
+                HasMany(p => p.MedicinesInPrescription).
+                WithOne(p => p.Prescription).
+                HasForeignKey(p => p.MedicineId);
+            
+            modelBuilder.Entity<Prescription>().
+                HasMany(p => p.MedicinesInPrescription).
+                WithOne(p => p.Prescription).
+                HasForeignKey(p => p.PrescriptionId);
+
+            modelBuilder.Entity<MedicinesInPrescription>().
+                HasOne(p => p.Medicine).
+                WithMany(p => p.MedicinesInPrescriptions).
+                HasForeignKey(p => p.MedicineId);
+            
+            modelBuilder.Entity<MedicinesInPrescription>().
+                HasOne(p => p.Prescription).
+                WithMany(p => p.MedicinesInPrescription).
+                HasForeignKey(p => p.PrescriptionId);
+
             //Seed Data Here
             var seeder = new Seeder(false);
             modelBuilder.Entity<Patient>().
@@ -43,6 +79,15 @@ namespace workshop.wwwapi.Data
 
             modelBuilder.Entity<Appointment>().
                 HasData(seeder.Appointments);
+            
+            modelBuilder.Entity<Prescription>().
+                HasData(seeder.Prescriptions);
+
+            modelBuilder.Entity<MedicinesInPrescription>().
+                HasData(seeder.Medicines_in_presccription);
+
+            modelBuilder.Entity <Medicine>().
+                HasData(seeder.Medicines);
 
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

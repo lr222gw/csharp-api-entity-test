@@ -9,9 +9,9 @@ namespace workshop.wwwapi.DTO.Response.Doctor
         public string FullName { get; set; }
         public ICollection<DTO.Response.Appointment.Get> appointments { get; set; }
 
-        public override void define_include_queries(ref Func<IQueryable<Models.Doctor>, IQueryable<Models.Doctor>> queryLambda)
+        public override void define_include_queries(ref List<Func<IQueryable<Models.Doctor>, IQueryable<Models.Doctor>>> queryLambda)
         {
-            queryLambda = x => x.Include(x => x.Appointments).ThenInclude(x => x.Patient);
+            queryLambda.Add(x => x.Include(x => x.Appointments).ThenInclude(x => x.Patient));
         }
 
         public override void define_where_query_for_id(ref Func<IQueryable<Models.Doctor>, IQueryable<Models.Doctor>> id_query, params object[] id)

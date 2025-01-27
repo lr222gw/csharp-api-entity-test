@@ -20,6 +20,9 @@ builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddScoped<IRepository<Doctor>,Repository<Doctor>>();
 builder.Services.AddScoped<IRepository<Patient>,Repository<Patient>>();
 builder.Services.AddScoped<IRepository<Appointment>,Repository<Appointment>>();
+builder.Services.AddScoped<IRepository<Prescription>,Repository<Prescription>>();
+builder.Services.AddScoped<IRepository<Medicine>,Repository<Medicine>>();
+builder.Services.AddScoped<IRepository<MedicinesInPrescription>,Repository<MedicinesInPrescription>>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -34,6 +37,7 @@ app.UseHttpsRedirection();
 app.ConfigurePatientEndpoint();
 app.ConfigureDoctorEndpoint();
 app.ConfigureAppointmentEndpoint();
+app.ConfigurePrescriptionEndpoint();
 app.Run();
 
 public partial class Program { } // needed for testing - please ignore

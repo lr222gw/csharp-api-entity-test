@@ -22,10 +22,16 @@ namespace workshop.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetPatient(HttpContext context, IRepository<Patient> repo, int id)
         {
-            var p = await DTO.Response.Patient.Get.DTO(repo, id); 
-            if (p == null) return TypedResults.NotFound($"Patient with id[{id}] was not found");
-
-            return TypedResults.Ok(p);
+            try
+            {
+                var p = await DTO.Response.Patient.Get.DTO(repo, id);
+                return TypedResults.Ok(p);
+            }
+            catch (Exception ex)
+            {
+                if (ex is KeyNotFoundException) return TypedResults.NotFound($"Patient with id[{id}] was not found");
+                return TypedResults.BadRequest($"Bad request...");
+            }
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
