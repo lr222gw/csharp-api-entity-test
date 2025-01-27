@@ -4,11 +4,6 @@ namespace workshop.wwwapi.DTO.Response.Appointment
 {
     public class GetPatients : BaseDTO<GetPatients, Models.Patient>
     {
-        //public GetPatients(Models.Patient d)
-        //{
-        //    //Appointments = d.Appointments.Select(x => new Appointment.Get(x)).ToList();
-        //    Appointments = toDtos
-        //}
         public List<Appointment.Get> Appointments { get; set; } = new List<Appointment.Get>();
 
         public override void defIncl(ref Func<IQueryable<Models.Patient>, IQueryable<Models.Patient>> queryLambda)

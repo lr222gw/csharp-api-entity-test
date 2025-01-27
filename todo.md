@@ -32,13 +32,13 @@
   - [X]  get appointments by patient id 
   - [X]  create new appointment;
   - [X]  make sure to use DTOs as required for returning the results 
-- [ ]  Update all dtos (to include the relevant loaded fields via the relations) for : 
-  - [ ]  patient 
-    - [ ] a patient should include its appointments and each appointment include the doctor's name / id
-  - [ ]  doctor 
-    - [ ] a doctor should include its appointments and each appointment include the patient's name / id
-  - [ ]  appointments
-    - [ ] an appointment should include the patient's name / id and the doctor's name / id
+- [X]  Update all dtos (to include the relevant loaded fields via the relations) for : 
+  - [X]  patient 
+    - [X] a patient should include its appointments and each appointment include the doctor's name / id
+  - [X]  doctor 
+    - [X] a doctor should include its appointments and each appointment include the patient's name / id
+  - [X]  appointments
+    - [X] an appointment should include the patient's name / id and the doctor's name / id
 
 - [ ] Write some basic tests (one for each of the controller endpoints, to verify the seeded data) for : 
   - [ ] get all 

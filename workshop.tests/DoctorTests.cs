@@ -6,15 +6,13 @@ namespace workshop.tests;
 public partial class Tests
 {
 
+
     [Test]
-    public async Task GetAll_PatientEndpointStatus()
+    public async Task GetAll_DoctorEndpointStatus()
     {
         // Arrange
-        var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { 
-          
-        });
-        //factory.ClientOptions.BaseAddress.
-        var client = factory.CreateClient( );
+        var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { });
+        var client = factory.CreateClient();
 
         // Act
         var response = await client.GetAsync("/patients");
@@ -23,5 +21,4 @@ public partial class Tests
         Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.OK);
     }
 
-   
 }

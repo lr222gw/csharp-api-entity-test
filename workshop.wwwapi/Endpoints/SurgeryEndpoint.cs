@@ -6,6 +6,8 @@ namespace workshop.wwwapi.Endpoints
 {
     public static class SurgeryEndpoint
     {
+        // NOTE: OLD CODE FROM ASSIGNMNET
+
         //TODO:  add additional endpoints in here according to the requirements in the README.md 
         //public static void ConfigureSurgeryEndpoint(this WebApplication app)
         //{
