@@ -7,12 +7,12 @@ namespace workshop.wwwapi.DTO.Response.Appointment
     {
         public List<Appointment.Get> Appointments { get; set; } = new List<Appointment.Get>();
 
-        public override void defIncl(ref Func<IQueryable<Models.Patient>, IQueryable<Models.Patient>> queryLambda)
+        public override void define_include_queries(ref Func<IQueryable<Models.Patient>, IQueryable<Models.Patient>> queryLambda)
         {
             queryLambda = x => x.Include(x => x.Appointments).ThenInclude(x => x.Doctor);
         }
 
-        public override void def_id_Incl(ref Func<IQueryable<Models.Patient>, IQueryable<Models.Patient>> id_query, params object[] id)
+        public override void define_where_query_for_id(ref Func<IQueryable<Models.Patient>, IQueryable<Models.Patient>> id_query, params object[] id)
         {
             id_query = x => x.Where(x => x.Id == (int)id[0]);
         }

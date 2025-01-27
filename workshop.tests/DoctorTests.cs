@@ -15,10 +15,11 @@ public partial class Tests
         var client = factory.CreateClient();
 
         // Act
-        var response = await client.GetAsync("/patients");
+        //var response = await client.GetAsync("doctors/");
+        var response = await client.GetAsync("doctors");
 
         // Assert
-        Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.OK);
+        Assert.That(response.StatusCode == System.Net.HttpStatusCode.OK);
     }
 
 }

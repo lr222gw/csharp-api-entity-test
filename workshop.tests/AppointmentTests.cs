@@ -18,6 +18,6 @@ public partial class Tests
         var response = await client.GetAsync("/patients");
 
         // Assert
-        Assert.IsTrue(response.StatusCode == System.Net.HttpStatusCode.OK);
+        Assert.That(response.StatusCode == System.Net.HttpStatusCode.OK);
     }
 }

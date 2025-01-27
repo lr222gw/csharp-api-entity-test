@@ -28,7 +28,7 @@ namespace workshop.wwwapi.Endpoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetDoctors(HttpContext context, IRepository<Doctor> repo)
+        private static async Task<IResult> GetDoctors( IRepository<Doctor> repo)
         {
             var p = await DTO.Response.Doctor.Get.DTO(repo);
             
