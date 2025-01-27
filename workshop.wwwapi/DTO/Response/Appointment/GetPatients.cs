@@ -1,4 +1,5 @@
-﻿using workshop.wwwapi.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using workshop.wwwapi.Models;
 
 namespace workshop.wwwapi.DTO.Response.Appointment
 {
@@ -8,19 +9,17 @@ namespace workshop.wwwapi.DTO.Response.Appointment
 
         public override void defIncl(ref Func<IQueryable<Models.Patient>, IQueryable<Models.Patient>> queryLambda)
         {
-            throw new NotImplementedException();
+            queryLambda = x => x.Include(x => x.Appointments).ThenInclude(x => x.Doctor);
         }
 
         public override void def_id_Incl(ref Func<IQueryable<Models.Patient>, IQueryable<Models.Patient>> id_query, params object[] id)
         {
-            throw new NotImplementedException();
+            id_query = x => x.Where(x => x.Id == (int)id[0]);
         }
 
         public override void Instantiate(Models.Patient instance)
         {
-            throw new NotImplementedException();
-            //Appointments = d.Appointments.Select(x => new Appointment.Get(x)).ToList();
-            //Appointments = toDtos
+            Appointments = ToDTOs<Models.Appointment, Appointment.Get>(instance.Appointments).ToList();
         }
     }
 }
